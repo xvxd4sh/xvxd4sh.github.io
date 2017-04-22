@@ -1,0 +1,187 @@
+nav.nav-transparent {
+  border: none;
+  background: rgba(0,0,0, 0.5);
+}
+
+.header {
+  height: 100%;
+  color: white;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: table;
+  padding-top: 170px;
+  padding-bottom: 375px;
+  background: url(../img/bg.jpg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  font-family: 'Diplomata SC',serif;
+}
+
+h1.intro-text {
+  font-size: 500%;
+  padding-top: 3.0em;
+  color: white;
+  text-align: center;
+}
+
+h1.center{
+  text-align: center;
+  font-size: 300%;
+}
+
+.white {
+  color:white;
+}
+
+p.allign{
+  padding-top: 50px;
+  margin: 25px;
+  padding-left: 35px;
+
+}
+
+span.Sub-intro-text{
+  font-size: 250%;
+  Color: white;
+  text-align: center;
+  padding-left: 9.0em;
+
+}
+
+.Underpicture div{
+  background-color: #630031;
+	margin: 0;
+	min-height: 168px;
+	overflow: hidden;
+	padding: 0;
+	width: 100%;
+}
+div#tab{
+  padding-top: 15px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  font-family: 'Yellowtail', cursive;
+  font-size: 25px;
+  background-color: gold;
+  display: block;
+}
+
+div#collum{
+  padding-left: 15px;
+
+}
+
+head div a.logo {
+  display: block;
+	float: left;
+	height: 30px;
+  	margin: 0 44px 0 0;
+	padding: 0;
+	width: 250px;
+}
+
+a.logo > img {
+  height: 90px;
+  width : 125px;
+}
+
+.container {
+  content:"";
+  display: table;
+  clear:both;
+
+
+}
+
+.aboutmebackground{
+  height: 100%;
+  width: 100%;
+  background: url(../img/wood.jpg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  padding-bottom: 15px;
+}
+
+.educationbackground {
+  height: 100%;
+  width: 100%;
+  background: url(../img/bokehstreetnight.jpeg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+}
+
+.xtrabackground {
+  height: 100%;
+  width: 100%;
+  background: url(../img/whitebackground.jpg) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+
+}
+
+div.col-md-6 > p {
+  font-size: 150%;
+
+}
+div.col-md-12 > h1 {
+  font-size: 200%;
+
+}
+a.selfportrait > img {
+
+  height: 500px;
+  width: 375px;
+  float: right;
+  margin: 30px;
+}
+
+a.leftpicture > img {
+  height: 450px;
+  width: 300px;
+  align-items: center;
+  float: none;
+margin: 25px;
+}
+div.col-md-7 > p {
+  font-size: 100%;
+  text-align: justify;
+  padding-top: 50px;
+  padding-right: 45px;
+  margin: 25px;
+  font-size: 125%;
+}
+.FontUp {
+  font-size: 300%;
+  text-align: center;
+}
+/*
+.sizeup {
+  font-size: 200%
+}
+.title {
+  font-size: 400%;
+  text-align: center;
+  color: grey;
+}
+*/
+
+.picsizehorizontal {
+  width: 600px;
+  height: 375px;
+  margin: 30px;
+
+}
+
+.newtitlepadding {
+  padding-top: 150px;
+  padding-bottom: 50px;
+}

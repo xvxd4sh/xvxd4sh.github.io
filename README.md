@@ -1,2 +1,2 @@
 # xvxd4sh.github.io
-personal site
+An Attempt at A personal portfolio website

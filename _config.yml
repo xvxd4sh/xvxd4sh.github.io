@@ -1,0 +1,25 @@
+title: "alexs wijoyo"
+heading: "alexs wijoyo"
+subheading: "robotics, programming, technology"
+
+author: John Doe
+
+timezone: UTC
+
+collections:
+  posts:
+    title: Posts
+    output: true
+  uploads:
+    title: Uploads
+    output: true
+
+email: test@email.com
+description: 'Your Description Here'
+baseurl: ''
+markdown: kramdown
+gems:
+- jekyll-feed
+exclude:
+- Gemfile
+- Gemfile.lock

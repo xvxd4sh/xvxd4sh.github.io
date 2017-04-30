@@ -1,2 +1,2 @@
-# minimus
-A minimal Jekyll theme for both a personal portfolio and blog. 
+# Personal site
+This is an attempt in making a personal and professional site. 

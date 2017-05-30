@@ -2,7 +2,7 @@ title: "alexs wijoyo"
 heading: "alexs wijoyo"
 subheading: "robotics, programming, technology"
 
-author: John Doe
+author: Alexs Wijoyo
 
 timezone: UTC
 
@@ -14,7 +14,7 @@ collections:
     title: Uploads
     output: true
 
-email: test@email.com
+email: alexongkowijoyo91@gmail.com
 description: 'Your Description Here'
 baseurl: ''
 markdown: kramdown

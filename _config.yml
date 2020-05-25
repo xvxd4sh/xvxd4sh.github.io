@@ -10,7 +10,7 @@ instagram_username: 'xvx.alexs'
 
 # Build settings
 markdown: kramdown
-remote_theme: phantom # Uncomment once published to RubyGems
+remote_theme: jamigibbs/phantom # Uncomment once published to RubyGems
 plugins:
   - jekyll-paginate-v2
 

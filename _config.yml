@@ -77,7 +77,7 @@ pagination:
 ### Phantom settings
 footer_text: '© 2020 Alexs Wijoyo'
 admin_name: 'Alexs Wijoyo'
-google_analytics: "" # Update with your own tracking ID
+## google_analytics: "" # Update with your own tracking ID
 enable_contact: true
 
 #### Phantom Navigation menu

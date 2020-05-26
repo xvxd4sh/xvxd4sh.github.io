@@ -6,7 +6,8 @@ url: "https://xvxd4sh.github.io/" # the base hostname & protocol for your site, 
 twitter_username: ''
 github_username: 'xvxd4sh'
 medium_username: ''
-instagram_username: 'xvx.alexs'
+instagram_username: ''
+linkedin_username: 'alexswijoyo'
 
 # Build settings
 markdown: kramdown
@@ -81,7 +82,7 @@ admin_name: 'Alexs Wijoyo'
 enable_contact: true
 
 #### Phantom Navigation menu
-enable_nav: true
+enable_nav: false
 nav_item:
   - { url: '/', text: 'Home' }
   - { url: '/about', text: 'About' }

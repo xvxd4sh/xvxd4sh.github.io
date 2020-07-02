@@ -5,8 +5,8 @@
     <description>I'm a Tech Junkie from New york focusing on cyber security</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 31 May 2020 16:23:22 -0400</pubDate>
-    <lastBuildDate>Sun, 31 May 2020 16:23:22 -0400</lastBuildDate>
+    <pubDate>Thu, 02 Jul 2020 15:17:39 -0400</pubDate>
+    <lastBuildDate>Thu, 02 Jul 2020 15:17:39 -0400</lastBuildDate>
     <generator>Jekyll v3.8.7</generator>
     
       <item>
@@ -24,6 +24,21 @@
         <category>cars</category>
         
         <category>R&amp;D</category>
+        
+        
+        <category>development</category>
+        
+      </item>
+    
+      <item>
+        <title>Cipher</title>
+        <description>
+</description>
+        <pubDate>Sun, 24 May 2020 08:10:00 -0400</pubDate>
+        <link>http://localhost:4000/development/2020/05/24/cipher.html</link>
+        <guid isPermaLink="true">http://localhost:4000/development/2020/05/24/cipher.html</guid>
+        
+        <category>Golang</category>
         
         
         <category>development</category>

@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>cyberxcapsule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Geist:wght@300;400;500;600&display=swap">
+<script src="content.js"></script>
+<script>
+  window.__TWEAKS__ = {
+    "accentHue": 220,
+    "rainDensity": 1.8,
+    "behavior": "repel",
+    "glitchIntensity": 0.6,
+    "sigilStyle": "glyph",
+    "scanlines": false
+  };
+</script>
+<style>
+  :root{
+    --hue: 220;
+    --accent: oklch(0.82 0.13 var(--hue));
+    --accent-dim: oklch(0.55 0.10 var(--hue));
+    --accent-weak: oklch(0.32 0.06 var(--hue));
+    --accent-glow: color-mix(in oklch, var(--accent) 60%, transparent);
+    --bg:       oklch(0.13 0.012 240);
+    --bg-1:     oklch(0.16 0.013 240);
+    --bg-2:     oklch(0.19 0.014 240);
+    --line:     oklch(0.26 0.012 240);
+    --line-2:   oklch(0.34 0.015 240);
+    --fg:       oklch(0.92 0.008 240);
+    --fg-mute:  oklch(0.68 0.012 240);
+    --fg-dim:   oklch(0.48 0.012 240);
+    --danger:   oklch(0.72 0.16 25);
+    --warn:     oklch(0.82 0.14 80);
+    --ok:       oklch(0.80 0.14 155);
+    --mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+    --sans: 'Geist', Inter, system-ui, -apple-system, sans-serif;
+    --u: clamp(0.78px, 0.11vmin, 1.2px);
+    --fs-micro: clamp(9px, 1.05vmin, 12px);
+    --fs-tiny:  clamp(10px, 1.2vmin, 13px);
+    --fs-sm:    clamp(11px, 1.35vmin, 14px);
+    --fs-md:    clamp(12px, 1.55vmin, 16px);
+    --fs-lg:    clamp(14px, 1.85vmin, 18px);
+    --fs-xl:    clamp(16px, 2.2vmin, 22px);
+    --fs-hero:  clamp(44px, 11vmin, 160px);
+    --gap-s:    clamp(6px, 0.8vmin, 12px);
+    --gap-m:    clamp(10px, 1.4vmin, 18px);
+    --gap-l:    clamp(16px, 2.2vmin, 28px);
+    --pad-page: clamp(14px, 2.2vmin, 40px);
+    --bar-h:    clamp(30px, 4.2vmin, 44px);
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg); font-family:var(--sans); }
+  body{
+    min-height:100dvh;
+    overflow:hidden;
+    font-feature-settings: "ss01","cv11";
+    -webkit-font-smoothing: antialiased;
+    cursor: crosshair;
+  }
+  .scanlines::after{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index: 50;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      rgba(255,255,255,0.015) 3px,
+      rgba(0,0,0,0.06) 4px
+    );
+    mix-blend-mode: overlay;
+  }
+  .vignette::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index: 49;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%);
+  }
+
+  #rain{
+    position: fixed; inset:0; width:100vw; height:100vh; z-index: 0;
+    display:block;
+  }
+
+  .statusbar{
+    position: fixed; top:0; left:0; right:0; z-index: 20;
+    display:flex; align-items:center; gap: var(--gap-m); flex-wrap: wrap;
+    padding: clamp(6px, 1vmin, 12px) var(--pad-page);
+    font-family: var(--mono); font-size: var(--fs-micro);
+    color: var(--fg-mute);
+    background: linear-gradient(to bottom, oklch(0.14 0.012 240 / 0.85), oklch(0.14 0.012 240 / 0.4));
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(6px);
+    min-height: var(--bar-h);
+  }
+  .statusbar .dot{ width:7px; height:7px; border-radius:50%; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); display:inline-block; margin-right:6px; }
+  .statusbar .k{ color: var(--fg-dim); }
+  .statusbar .v{ color: var(--fg); }
+  .statusbar .spacer{ flex:1; }
+  .statusbar .blink{ animation: blink 1.1s steps(2) infinite; }
+
+  .footbar{
+    position: fixed; bottom:0; left:0; right:0; z-index: 20;
+    display:flex; align-items:center; gap: var(--gap-m); flex-wrap: wrap;
+    padding: clamp(5px, 0.8vmin, 10px) var(--pad-page);
+    font-family: var(--mono); font-size: var(--fs-micro);
+    color: var(--fg-dim);
+    background: linear-gradient(to top, oklch(0.14 0.012 240 / 0.85), oklch(0.14 0.012 240 / 0.2));
+    border-top: 1px solid var(--line);
+    backdrop-filter: blur(6px);
+    min-height: var(--bar-h);
+  }
+  .footbar .chip{
+    padding: 2px clamp(6px,0.9vmin,10px); border: 1px solid var(--line-2); border-radius: 2px;
+    color: var(--fg-mute);
+  }
+  .footbar .chip.on{ color: var(--accent); border-color: var(--accent-weak); }
+
+  .stage{
+    position: fixed; inset: 0; z-index: 10;
+    display:grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: var(--gap-l);
+    padding: calc(var(--bar-h) + var(--gap-m)) var(--pad-page) calc(var(--bar-h) + var(--gap-s));
+    pointer-events: none;
+    container-type: size;
+  }
+  .left, .right{ pointer-events: auto; position: relative; min-height: 0; min-width: 0; display:flex; flex-direction:column; }
+
+  .hero{
+    padding: 0;
+    display:flex; flex-direction:column; justify-content:center;
+    gap: var(--gap-m);
+    min-height: 0;
+    overflow: hidden;
+  }
+  .bracket{
+    display:inline-flex; align-items:center; gap: 10px;
+    font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .bracket::before, .bracket::after{
+    content:""; width: clamp(12px, 2vmin, 26px); height: 1px; background: var(--accent-weak);
+  }
+  .eyebrow{
+    font-family: var(--mono); font-size: var(--fs-micro); color: var(--fg-dim);
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  h1.name{
+    font-family: var(--mono);
+    font-size: var(--fs-hero);
+    line-height: 0.88;
+    letter-spacing: -0.04em;
+    margin: 0;
+    font-weight: 700;
+    color: var(--fg);
+    position: relative;
+    display: inline-block;
+  }
+  h1.name .cursor{
+    display:inline-block; width: 0.5em; height: 0.82em;
+    background: var(--accent); margin-left: 8px; vertical-align: -0.05em;
+    animation: blink 1s steps(2) infinite;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .glitch{ position: relative; }
+  .glitch::before, .glitch::after{
+    content: attr(data-text);
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .glitch::before{
+    color: var(--accent); transform: translate(calc(var(--gi,0.6) * -2px), calc(var(--gi,0.6) * 0px));
+    mix-blend-mode: screen; opacity: calc(var(--gi,0.6) * 0.55);
+    clip-path: polygon(0 0, 100% 0, 100% 38%, 0 38%);
+    animation: glitch-a 3.6s infinite steps(1);
+  }
+  .glitch::after{
+    color: var(--danger); transform: translate(calc(var(--gi,0.6) * 2px), calc(var(--gi,0.6) * 1px));
+    mix-blend-mode: screen; opacity: calc(var(--gi,0.6) * 0.42);
+    clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+    animation: glitch-b 4.2s infinite steps(1);
+  }
+  @keyframes glitch-a{
+    0%,94%,100%{ transform: translate(-1px, 0); clip-path: polygon(0 10%, 100% 10%, 100% 28%, 0 28%); }
+    95%{ transform: translate(-3px, 0); clip-path: polygon(0 42%, 100% 42%, 100% 48%, 0 48%); }
+    97%{ transform: translate(-2px, 0); clip-path: polygon(0 66%, 100% 66%, 100% 72%, 0 72%); }
+  }
+  @keyframes glitch-b{
+    0%,93%,100%{ transform: translate(2px, 0); clip-path: polygon(0 70%, 100% 70%, 100% 82%, 0 82%); }
+    94%{ transform: translate(4px, 0); clip-path: polygon(0 20%, 100% 20%, 100% 32%, 0 32%); }
+    98%{ transform: translate(3px, 0); clip-path: polygon(0 54%, 100% 54%, 100% 62%, 0 62%); }
+  }
+
+  .tagline{
+    font-family: var(--mono); font-size: var(--fs-sm); color: var(--fg-mute);
+    max-width: 58ch;
+    display:flex; align-items:center; gap: 12px;
+  }
+  .tagline .pre{ color: var(--accent); }
+
+  .handles{
+    display:flex; flex-wrap: wrap; gap: var(--gap-s);
+    font-family: var(--mono); font-size: var(--fs-tiny);
+  }
+  .handles .h{
+    display:inline-flex; align-items:center; gap: 8px;
+    padding: clamp(4px,0.6vmin,8px) clamp(7px,1vmin,12px);
+    border: 1px solid var(--line-2);
+    color: var(--fg-mute);
+    background: oklch(0.14 0.012 240 / 0.55);
+    backdrop-filter: blur(4px);
+    transition: color .15s, border-color .15s, background .15s;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .handles .h:hover{ color: var(--accent); border-color: var(--accent-weak); background: oklch(0.18 0.02 240 / 0.7); }
+  .handles .h .k{ color: var(--fg-dim); }
+  .handles .h:hover .k{ color: var(--accent-dim); }
+
+  .sigils{
+    display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap-s);
+    margin-top: 2px;
+  }
+  .sigil{
+    position: relative;
+    border: 1px solid var(--line-2);
+    background: oklch(0.14 0.012 240 / 0.55);
+    backdrop-filter: blur(4px);
+    padding: clamp(9px,1.2vmin,16px) clamp(9px,1.2vmin,16px) clamp(8px,1vmin,14px);
+    font-family: var(--mono);
+    color: var(--fg-mute);
+    overflow: hidden;
+    transition: color .2s, border-color .2s, background .2s, transform .2s;
+    cursor: pointer;
+  }
+  .sigil:hover{ color: var(--accent); border-color: var(--accent-weak); background: oklch(0.17 0.02 240 / 0.7); }
+  .sigil .gl{
+    font-size: clamp(22px, 3.6vmin, 36px); line-height: 1; display:block; margin-bottom: clamp(4px,0.8vmin,10px);
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent-glow);
+  }
+  .sigil .code{ font-size: var(--fs-micro); color: var(--fg-dim); letter-spacing: 0.08em; }
+  .sigil .label{ font-size: var(--fs-tiny); color: var(--fg); margin-top: 2px; letter-spacing: 0.02em; }
+  .sigil::after{
+    content:""; position:absolute; inset: auto 0 0 0; height: 1px; background: var(--accent);
+    transform: scaleX(0); transform-origin: left; transition: transform .25s ease;
+  }
+  .sigil:hover::after{ transform: scaleX(1); }
+
+  .redact{
+    background: oklch(0.26 0.012 240);
+    color: transparent;
+    padding: 0 4px;
+    border-radius: 1px;
+    transition: background .2s, color .2s, letter-spacing .2s;
+    cursor: help;
+    user-select: none;
+  }
+  .redact:hover{
+    background: transparent;
+    color: var(--accent);
+    user-select: text;
+  }
+
+  .cards{
+    display:flex; flex-direction:column; gap: var(--gap-s);
+    margin-top: var(--gap-s);
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2) transparent;
+  }
+  .cards::-webkit-scrollbar{ width: 6px; }
+  .cards::-webkit-scrollbar-thumb{ background: var(--line-2); }
+  .card{
+    border: 1px solid var(--line);
+    background: oklch(0.14 0.012 240 / 0.55);
+    backdrop-filter: blur(4px);
+    padding: clamp(10px,1.3vmin,18px) clamp(12px,1.6vmin,20px);
+  }
+  .card .t{
+    display:flex; align-items:center; justify-content: space-between;
+    font-family: var(--mono); font-size: var(--fs-micro); color: var(--fg-dim);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    margin-bottom: var(--gap-s);
+  }
+  .card .t .meta{ color: var(--accent-dim); }
+  .card p{ margin:0; font-size: var(--fs-sm); line-height: 1.55; color: var(--fg); font-family: var(--sans); }
+  .card ul.writeups{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+  .writeups li{
+    display:grid; grid-template-columns: clamp(60px,7vmin,90px) minmax(0,1fr) auto; gap: clamp(8px,1vmin,14px); align-items:baseline;
+    padding: clamp(5px,0.7vmin,10px) 0; border-top: 1px dashed var(--line);
+    font-size: var(--fs-sm);
+  }
+  .writeups li:first-child{ border-top: none; padding-top: 2px; }
+  .writeups .d{ font-family: var(--mono); color: var(--fg-dim); font-size: var(--fs-micro); }
+  .writeups .ti{ color: var(--fg); }
+  .writeups .ti:hover{ color: var(--accent); }
+  .writeups .tg{ font-family: var(--mono); font-size: var(--fs-micro); color: var(--accent-dim); letter-spacing: 0.08em; }
+  .news-filter:hover{ color: var(--accent) !important; border-color: var(--accent-weak) !important; }
+  .news-filter.on{ color: var(--accent) !important; border-color: var(--accent-weak) !important; background: oklch(0.20 0.03 240) !important; }
+  .news-dots{ display:inline-block; animation: blink 1.1s steps(2) infinite; margin-left: 2px; }
+  .news-err{ color: var(--danger); }
+  .writeups a.ti{ text-decoration: none; }
+
+  .terminal{
+    flex: 1; min-height: 0;
+    display:flex; flex-direction:column;
+    border: 1px solid var(--line-2);
+    background: oklch(0.11 0.012 240 / 0.88);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 30px 60px -30px rgba(0,0,0,0.6), 0 0 0 1px oklch(0.14 0.012 240) inset;
+  }
+  .term-head{
+    display:flex; align-items:center; gap: 10px;
+    padding: clamp(6px,0.9vmin,12px) clamp(8px,1.2vmin,16px); border-bottom: 1px solid var(--line);
+    background: oklch(0.15 0.012 240);
+    font-family: var(--mono); font-size: var(--fs-micro); color: var(--fg-dim);
+  }
+  .term-head .lights{ display:flex; gap: 6px; margin-right: 6px; }
+  .term-head .lights i{ width:10px; height:10px; border-radius:50%; background: var(--line-2); display:block; border: 1px solid oklch(0.22 0.012 240); }
+  .term-head .lights i:nth-child(1){ background: oklch(0.55 0.13 25); }
+  .term-head .lights i:nth-child(2){ background: oklch(0.75 0.14 85); }
+  .term-head .lights i:nth-child(3){ background: oklch(0.70 0.15 150); }
+  .term-head .title{ color: var(--fg-mute); }
+  .term-head .path{ color: var(--accent-dim); margin-left: 4px; }
+  .term-head .tabs{ flex:1; display:flex; justify-content:flex-end; gap: 16px; }
+  .term-head .tabs span{ color: var(--fg-dim); }
+  .term-head .tabs span.active{ color: var(--accent); }
+
+  .term-body{
+    flex:1; min-height: 0; overflow-y: auto;
+    padding: clamp(10px,1.4vmin,18px) clamp(10px,1.4vmin,18px) clamp(6px,1vmin,12px);
+    font-family: var(--mono); font-size: var(--fs-sm); line-height: 1.55;
+    color: var(--fg);
+    scrollbar-width: thin; scrollbar-color: var(--line-2) transparent;
+  }
+  .term-body::-webkit-scrollbar{ width: 8px; }
+  .term-body::-webkit-scrollbar-thumb{ background: var(--line-2); }
+  .term-body .line{ white-space: pre-wrap; word-break: break-word; }
+  .term-body .prompt{ color: var(--accent); }
+  .term-body .user{ color: var(--accent); }
+  .term-body .host{ color: var(--fg-mute); }
+  .term-body .path{ color: var(--accent-dim); }
+  .term-body .ok{ color: var(--ok); }
+  .term-body .warn{ color: var(--warn); }
+  .term-body .err{ color: var(--danger); }
+  .term-body .dim{ color: var(--fg-dim); }
+  .term-body .acc{ color: var(--accent); }
+  .term-body .hl{ color: var(--fg); background: oklch(0.22 0.02 240); padding: 0 3px; }
+  .term-body pre.block{ margin: 4px 0 10px; color: var(--accent-dim); font-size: 11.5px; line-height: 1.2; }
+  .term-body table{ border-collapse: collapse; margin: 2px 0 8px; }
+  .term-body td{ padding: 1px 14px 1px 0; vertical-align: top; }
+  .term-body td.k{ color: var(--fg-dim); width: 120px; }
+
+  .term-input{
+    display:flex; align-items:center; gap: 8px;
+    padding: clamp(7px,1vmin,14px) clamp(10px,1.4vmin,18px);
+    border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: var(--fs-sm);
+    background: oklch(0.13 0.012 240);
+  }
+  .term-input .ps1{ color: var(--accent); white-space: nowrap; }
+  .term-input input{
+    flex:1; background: transparent; border: none; outline: none;
+    color: var(--fg); font: inherit; caret-color: var(--accent);
+  }
+  .term-input .caret{
+    width: 8px; height: 14px; background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    animation: blink 1s steps(2) infinite;
+  }
+
+  .tweaks{
+    position: fixed; right: clamp(10px,1.5vmin,20px); bottom: calc(var(--bar-h) + clamp(6px,1vmin,12px)); z-index: 60;
+    width: clamp(240px, 28vmin, 320px);
+    max-height: calc(100dvh - var(--bar-h) * 2 - 24px);
+    overflow-y: auto;
+    border: 1px solid var(--line-2);
+    background: oklch(0.12 0.012 240 / 0.95);
+    backdrop-filter: blur(10px);
+    font-family: var(--mono); font-size: var(--fs-tiny); color: var(--fg);
+    display: none;
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,0.7);
+  }
+  .tweaks.on{ display: block; }
+  .tweaks h4{
+    margin:0; padding: 8px 12px; border-bottom: 1px solid var(--line);
+    font-size: 11px; color: var(--fg-dim); letter-spacing: 0.14em; text-transform: uppercase;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .tweaks h4 .dot{ width: 7px; height:7px; border-radius:50%; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+  .tweaks .row{ padding: 10px 12px; border-bottom: 1px solid var(--line); display:flex; flex-direction:column; gap:6px; }
+  .tweaks .row:last-child{ border-bottom: none; }
+  .tweaks .row label{ color: var(--fg-dim); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; display:flex; justify-content:space-between; }
+  .tweaks .row label b{ color: var(--accent); font-weight: 500; }
+  .tweaks input[type=range]{ width: 100%; accent-color: var(--accent); }
+  .tweaks .seg{ display:flex; gap:0; border: 1px solid var(--line-2); }
+  .tweaks .seg button{
+    flex:1; padding: 6px 4px; background: transparent; border: none;
+    color: var(--fg-mute); font: inherit; cursor: pointer;
+    border-right: 1px solid var(--line);
+  }
+  .tweaks .seg button:last-child{ border-right: none; }
+  .tweaks .seg button.on{ background: oklch(0.20 0.03 240); color: var(--accent); }
+  .tweaks .swatches{ display:flex; gap: 6px; }
+  .tweaks .swatches button{
+    width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line-2);
+    cursor: pointer; padding: 0;
+  }
+  .tweaks .swatches button.on{ box-shadow: 0 0 0 2px var(--accent); }
+
+  @keyframes blink{ 0%,49%{ opacity: 1 } 50%,100%{ opacity: 0 } }
+
+  @media (max-width: 900px){
+    .stage{ grid-template-columns: 1fr; grid-template-rows: auto minmax(200px, 1fr); overflow-y:auto; padding-bottom: calc(var(--bar-h) + 12px); }
+    body{ overflow-y: auto; overflow-x: hidden; }
+    .hero .cards{ overflow-y: visible; }
+    .terminal{ height: clamp(320px, 60vh, 520px); }
+    h1.name{ font-size: clamp(40px, 14vw, 96px); }
+  }
+  @media (max-height: 640px) and (min-width: 901px){
+    .hero{ gap: var(--gap-s); }
+  }
+</style>
+</head>
+<body class="scanlines vignette">
+
+  <canvas id="rain" aria-hidden="true"></canvas>
+
+  <div class="statusbar">
+    <span><span class="dot"></span><span class="k">session</span> <span class="v" id="statSession"></span></span>
+    <span><span class="k">uptime</span> <span class="v" id="uptime">00:00:00</span></span>
+    <span><span class="k">tty</span> <span class="v" id="statTty"></span></span>
+    <span><span class="k">geo</span> <span class="v" id="statGeo"></span></span>
+    <span class="spacer"></span>
+    <span><span class="k">status</span> <span class="v" id="statStatus" style="color:var(--accent)"></span></span>
+    <span class="blink">_</span>
+  </div>
+
+  <div class="stage">
+    <div class="left">
+      <div class="hero">
+        <div class="bracket" id="bracket"></div>
+        <div class="eyebrow" id="eyebrow"></div>
+        <h1 class="name glitch" id="heroName" data-text=""><span class="heroText"></span><span class="cursor"></span></h1>
+        <div class="tagline"><span class="pre">//</span> <span id="tagline"></span></div>
+
+        <div class="sigils" id="sigils"></div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="t"><span>// about</span><span class="meta">cat ~/about.md</span></div>
+            <p id="aboutHtml"></p>
+          </div>
+          <div class="card">
+            <div class="t"><span>// news</span><span class="meta" id="newsMeta">curl rss.xml | head</span></div>
+            <ul class="writeups" id="newsList">
+              <li class="news-loading"><span class="d">----</span><span class="ti" style="color:var(--fg-dim)">fetching feeds<span class="news-dots">…</span></span><span class="tg">NET</span></li>
+            </ul>
+            <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; font-family:var(--mono); font-size:10.5px;">
+              <span id="newsFilters" style="display:contents;"></span>
+              <span style="flex:1"></span>
+              <button id="newsRefresh" style="background:transparent; border:1px solid var(--line-2); color:var(--fg-mute); padding:3px 9px; cursor:pointer; letter-spacing:0.08em;">↻ refresh</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="t"><span>// contact</span><span class="meta">gpg --list-keys alexs</span></div>
+            <div class="handles" id="contactChips"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="terminal" id="terminal">
+        <div class="term-head">
+          <span class="lights"><i></i><i></i><i></i></span>
+          <span class="title" id="termTitle"></span>
+          <span class="tabs" id="termTabs"></span>
+        </div>
+        <div class="term-body" id="termBody"></div>
+        <form class="term-input" id="termForm" autocomplete="off">
+          <span class="ps1" id="termPs1"></span>
+          <input id="termInput" spellcheck="false" autocapitalize="off" autocomplete="off" autofocus />
+          <span class="caret"></span>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="footbar">
+    <span>⟶ move the cursor across the grid; binaries repel &amp; reveal</span>
+    <span class="chip" id="fpsChip">fps <b id="fps">—</b></span>
+    <span class="chip on">repel</span>
+    <span class="chip">glitch 0.6</span>
+    <span style="flex:1"></span>
+    <span>press&nbsp;<b style="color:var(--accent)">/</b>&nbsp;to focus terminal&nbsp;·&nbsp;<b style="color:var(--accent)">help</b>&nbsp;for commands&nbsp;·&nbsp;<b style="color:var(--accent)">`</b>&nbsp;tweaks</span>
+  </div>
+
+  <aside class="tweaks" id="tweaks">
+    <h4>Tweaks <span class="dot"></span></h4>
+    <div class="row">
+      <label>Accent hue <b id="lblHue">220°</b></label>
+      <div class="swatches" id="swHue">
+        <button data-hue="220" style="background:oklch(0.82 0.13 220)"></button>
+        <button data-hue="200" style="background:oklch(0.82 0.13 200)"></button>
+        <button data-hue="155" style="background:oklch(0.82 0.13 155)"></button>
+        <button data-hue="85"  style="background:oklch(0.82 0.13 85)"></button>
+        <button data-hue="25"  style="background:oklch(0.72 0.16 25)"></button>
+        <button data-hue="310" style="background:oklch(0.75 0.15 310)"></button>
+      </div>
+    </div>
+    <div class="row">
+      <label>Rain density <b id="lblDensity">1.0×</b></label>
+      <input type="range" id="rngDensity" min="0.3" max="1.8" step="0.05" value="1" />
+    </div>
+    <div class="row">
+      <label>Binary behavior</label>
+      <div class="seg" id="segBehavior">
+        <button data-v="repel" class="on">repel</button>
+        <button data-v="scramble">scramble</button>
+        <button data-v="attract">attract</button>
+      </div>
+    </div>
+    <div class="row">
+      <label>Glitch intensity <b id="lblGi">0.6</b></label>
+      <input type="range" id="rngGi" min="0" max="1.4" step="0.05" value="0.6" />
+    </div>
+    <div class="row">
+      <label>Sigil style</label>
+      <div class="seg" id="segSigil">
+        <button data-v="glyph" class="on">glyph</button>
+        <button data-v="mono">mono</button>
+        <button data-v="ascii">ascii</button>
+      </div>
+    </div>
+    <div class="row">
+      <label>Scanlines</label>
+      <div class="seg" id="segScan">
+        <button data-v="on" class="on">on</button>
+        <button data-v="off">off</button>
+      </div>
+    </div>
+  </aside>
+
+<script>
+// Content renderer — populates the static DOM from window.__CONTENT__ (content.js).
+// Edit content.js and refresh; do not edit the text inside index.html.
+(() => {
+  const C = window.__CONTENT__;
+  if (!C){ console.error('content.js did not load — check the file exists next to index.html'); return; }
+
+  // Inline-formatting helper: {{a:…}} → accent, {{d:…}} → dim.
+  function fmt(s){
+    return String(s)
+      .replace(/\{\{a:([^}]*)\}\}/g, '<span class="acc">$1</span>')
+      .replace(/\{\{d:([^}]*)\}\}/g, '<span class="dim">$1</span>');
+  }
+  window.__fmt = fmt;
+
+  // ── <title>, statusbar, hero ────────────────────────────────────────────
+  const m = C.meta || {};
+  if (m.title) document.title = m.title;
+  const set = (id, v) => { const n = document.getElementById(id); if (n != null && v != null) n.textContent = v; };
+  set('statSession', `${m.termUser}@${m.termHost}`);
+  set('statTty',     m.tty);
+  set('statGeo',     m.geo);
+  const statStatus = document.getElementById('statStatus');
+  if (statStatus) statStatus.innerHTML = `●&nbsp;${(m.status || '').replace(/ /g,'&nbsp;')}`;
+  set('bracket',  m.node);
+  set('eyebrow',  m.eyebrow);
+  set('tagline',  m.tagline);
+
+  const name = document.getElementById('heroName');
+  if (name){
+    name.setAttribute('data-text', m.name || '');
+    const inner = name.querySelector('.heroText');
+    if (inner) inner.textContent = m.name || '';
+  }
+
+  // Terminal title + prompt
+  const termTitle = document.getElementById('termTitle');
+  if (termTitle) termTitle.innerHTML =
+    `${m.termUser}@${m.termHost}:<span class="path">~</span>&nbsp;—&nbsp;zsh&nbsp;—&nbsp;${m.termSize}`;
+  const termTabs = document.getElementById('termTabs');
+  if (termTabs){
+    termTabs.innerHTML = (m.termTabs || []).map((t, i) =>
+      `<span${i === 0 ? ' class="active"' : ''}>${t}</span>`).join('');
+  }
+  const termPs1 = document.getElementById('termPs1');
+  if (termPs1) termPs1.innerHTML =
+    `<span class="user">${m.termUser}</span><span class="dim">@</span><span class="host">${m.termHost}</span><span class="dim">:</span><span class="path">~</span><span class="dim">$</span>`;
+
+  // ── Sigils ──────────────────────────────────────────────────────────────
+  const sigilsEl = document.getElementById('sigils');
+  if (sigilsEl){
+    sigilsEl.innerHTML = (C.skills || []).map(s => `
+      <div class="sigil" data-k="${s.key}">
+        <span class="gl" data-glyph="${s.glyph}">${s.glyph}</span>
+        <div class="code">${s.code}</div>
+        <div class="label">${s.label}</div>
+      </div>`).join('');
+  }
+
+  // ── About card ──────────────────────────────────────────────────────────
+  const aboutEl = document.getElementById('aboutHtml');
+  if (aboutEl && C.about) aboutEl.innerHTML = C.about.cardHtml || '';
+
+  // ── Contact chips ───────────────────────────────────────────────────────
+  const chipsEl = document.getElementById('contactChips');
+  if (chipsEl && C.contact){
+    chipsEl.innerHTML = (C.contact.chips || []).map(c =>
+      `<a class="h" href="${c.href || '#'}"><span class="k">${c.k}</span>${String(c.v).replace(/ /g,'&nbsp;')}</a>`
+    ).join('');
+  }
+
+  // ── News filter buttons ────────────────────────────────────────────────
+  const filtersEl = document.getElementById('newsFilters');
+  if (filtersEl && C.news){
+    filtersEl.innerHTML = (C.news.filters || []).map((f, i) => {
+      const on = i === 0;
+      return `<button class="news-filter${on ? ' on' : ''}" data-f="${f.key}" style="background:transparent; border:1px solid ${on ? 'var(--accent-weak)' : 'var(--line-2)'}; color:${on ? 'var(--accent)' : 'var(--fg-mute)'}; padding:3px 9px; cursor:pointer; letter-spacing:0.08em;">${f.label}</button>`;
+    }).join('');
+  }
+})();
+</script>
+
+<script>
+(() => {
+  const canvas = document.getElementById('rain');
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const state = {
+    w: 0, h: 0, dpr: Math.min(2, window.devicePixelRatio || 1),
+    cols: [],
+    cellW: 16, cellH: 18,
+    mx: -9999, my: -9999, active: false,
+    t0: performance.now(),
+    lastFrame: performance.now(),
+    tweaks: window.__TWEAKS__ || { accentHue: 220, rainDensity: 1, behavior: 'repel', glitchIntensity: 0.6 },
+    sigils: [],
+  };
+  window.__RAIN__ = state;
+
+  const SKILLS = (window.__CONTENT__ && window.__CONTENT__.skills) || [];
+  const SIGILS = SKILLS.map(s => s.glyph);
+  const SIGIL_LABELS = SKILLS.map(s => s.key.toUpperCase());
+
+  function resize(){
+    state.w = window.innerWidth;
+    state.h = window.innerHeight;
+    canvas.width  = Math.floor(state.w * state.dpr);
+    canvas.height = Math.floor(state.h * state.dpr);
+    canvas.style.width  = state.w + 'px';
+    canvas.style.height = state.h + 'px';
+    ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+
+    const n = Math.ceil(state.w / state.cellW);
+    state.cols = [];
+    for (let i = 0; i < n; i++){
+      state.cols.push({
+        x: i * state.cellW,
+        y: Math.random() * state.h,
+        speed: 1 + Math.random() * 2.2,
+        length: 10 + Math.floor(Math.random() * 22),
+        chars: Array.from({length: 32}, () => Math.random() < 0.5 ? '0' : '1'),
+        offset: Math.random() * 1000,
+        lastChange: 0,
+      });
+    }
+
+    const W = state.w, H = state.h;
+    state.sigils = [
+      { x: W*0.22, y: H*0.32, glyph: SIGILS[0], label: SIGIL_LABELS[0], charge: 0 },
+      { x: W*0.78, y: H*0.30, glyph: SIGILS[1], label: SIGIL_LABELS[1], charge: 0 },
+      { x: W*0.20, y: H*0.78, glyph: SIGILS[2], label: SIGIL_LABELS[2], charge: 0 },
+      { x: W*0.82, y: H*0.74, glyph: SIGILS[3], label: SIGIL_LABELS[3], charge: 0 },
+    ];
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  window.addEventListener('mousemove', (e) => {
+    state.mx = e.clientX; state.my = e.clientY; state.active = true;
+  });
+  window.addEventListener('mouseleave', () => { state.active = false; });
+  window.addEventListener('mouseenter', () => { state.active = true; });
+  window.addEventListener('touchmove', (e) => {
+    if (!e.touches[0]) return;
+    state.mx = e.touches[0].clientX;
+    state.my = e.touches[0].clientY;
+    state.active = true;
+  }, { passive: true });
+
+  let frames = 0, fpsT = performance.now();
+  const fpsEl = document.getElementById('fps');
+
+  const SCRAMBLE = ['0','1','0','1','F','A','3','C','7','E','B','D','%','$','#','*','@','&','X'];
+  function ch(col, i, t){
+    const k = (i * 131 + Math.floor((t + col.offset) / 90)) | 0;
+    const v = ((k * 2654435761) >>> 0) & 1;
+    return v ? '1' : '0';
+  }
+
+  function hueColor(l, c, alpha){
+    const h = state.tweaks.accentHue;
+    return `oklch(${l} ${c} ${h} / ${alpha})`;
+  }
+
+  function draw(now){
+    const dt = Math.min(50, now - state.lastFrame);
+    state.lastFrame = now;
+    const t = now - state.t0;
+
+    ctx.fillStyle = 'rgba(10, 13, 18, 0.18)';
+    ctx.fillRect(0, 0, state.w, state.h);
+
+    const density = state.tweaks.rainDensity || 1;
+    const behavior = state.tweaks.behavior || 'repel';
+    const mx = state.mx, my = state.my;
+    const R = 140;
+    const R2 = R * R;
+
+    ctx.font = '13px "JetBrains Mono", ui-monospace, monospace';
+    ctx.textBaseline = 'top';
+
+    for (let i = 0; i < state.cols.length; i++){
+      const col = state.cols[i];
+      col.y += col.speed * density * (dt / 16.6);
+      if (col.y - col.length * state.cellH > state.h){
+        col.y = -Math.random() * 200;
+        col.speed = 1 + Math.random() * 2.2;
+        col.length = 10 + Math.floor(Math.random() * 22);
+        col.offset = Math.random() * 1000;
+      }
+
+      for (let j = 0; j < col.length; j++){
+        const yy = col.y - j * state.cellH;
+        if (yy < -20 || yy > state.h + 20) continue;
+        let xx = col.x;
+
+        let repelDx = 0, repelDy = 0, scrambled = false, hot = 0;
+        if (state.active){
+          const dx = xx - mx, dy = yy - my;
+          const d2 = dx*dx + dy*dy;
+          if (d2 < R2){
+            const d = Math.sqrt(d2) + 0.01;
+            hot = 1 - d / R;
+            if (behavior === 'repel'){
+              const force = (R - d) * 0.55;
+              repelDx = (dx / d) * force;
+              repelDy = (dy / d) * force * 0.5;
+            } else if (behavior === 'attract'){
+              const force = (R - d) * 0.35;
+              repelDx = -(dx / d) * force;
+              repelDy = -(dy / d) * force * 0.5;
+            } else if (behavior === 'scramble'){
+              scrambled = hot > 0.15;
+            }
+          }
+        }
+
+        xx += repelDx;
+        const drawY = yy + repelDy;
+
+        let glyph = ch(col, j, t);
+        if (scrambled) glyph = SCRAMBLE[(j + ((t/60)|0)) % SCRAMBLE.length];
+
+        const headBoost = j === 0 ? 1 : Math.max(0, 1 - j / col.length);
+        const baseAlpha = 0.08 + headBoost * 0.55;
+        let alpha = baseAlpha + hot * 0.55;
+        if (j === 0) alpha = Math.min(1, alpha + 0.25);
+
+        if (j === 0 || hot > 0.1){
+          ctx.fillStyle = hueColor(0.85, 0.14, Math.min(1, alpha));
+          if (hot > 0.2){
+            ctx.shadowColor = hueColor(0.82, 0.13, 0.55);
+            ctx.shadowBlur = 8 + hot * 14;
+          } else {
+            ctx.shadowBlur = 0;
+          }
+        } else {
+          ctx.fillStyle = `rgba(150, 180, 210, ${alpha * 0.45})`;
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.fillText(glyph, xx, drawY);
+      }
+    }
+    ctx.shadowBlur = 0;
+
+    for (const s of state.sigils){
+      const dx = s.x - mx, dy = s.y - my;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      const R2s = 200;
+      const near = state.active ? Math.max(0, 1 - d / R2s) : 0;
+      s.charge += (near - s.charge) * Math.min(1, dt / 140);
+
+      const c = s.charge;
+      if (c < 0.02) continue;
+
+      const r = 72 + c * 18;
+      const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
+      g.addColorStop(0, `oklch(0.16 0.03 ${state.tweaks.accentHue} / ${0.55 * c})`);
+      g.addColorStop(1, 'oklch(0.14 0.012 240 / 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, Math.PI * 2); ctx.fill();
+
+      ctx.strokeStyle = hueColor(0.75, 0.12, 0.3 + 0.55 * c);
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(s.x, s.y, 52, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([3, 5]);
+      ctx.strokeStyle = hueColor(0.82, 0.13, 0.2 + 0.5 * c);
+      ctx.beginPath(); ctx.arc(s.x, s.y, 38, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.font = `${Math.round(48 + c * 6)}px "JetBrains Mono", monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = hueColor(0.82, 0.13, 0.7);
+      ctx.shadowBlur = 10 + c * 22;
+      ctx.fillStyle = hueColor(0.92, 0.12, 0.55 + 0.45 * c);
+      ctx.fillText(s.glyph, s.x, s.y);
+      ctx.shadowBlur = 0;
+
+      ctx.font = `11px "JetBrains Mono", monospace`;
+      ctx.fillStyle = hueColor(0.78, 0.08, 0.4 + 0.5 * c);
+      ctx.fillText(s.label, s.x, s.y + 38);
+
+      ctx.textAlign = 'start';
+      ctx.textBaseline = 'top';
+    }
+
+    frames++;
+    if (now - fpsT > 500){
+      const fps = Math.round(frames * 1000 / (now - fpsT));
+      if (fpsEl) fpsEl.textContent = fps;
+      frames = 0; fpsT = now;
+    }
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  const upEl = document.getElementById('uptime');
+  const upStart = Date.now() - (Math.random() * 3600 * 6 | 0) * 1000;
+  setInterval(() => {
+    if (!upEl) return;
+    const s = Math.floor((Date.now() - upStart) / 1000);
+    const h = String(Math.floor(s / 3600)).padStart(2,'0');
+    const m = String(Math.floor((s % 3600) / 60)).padStart(2,'0');
+    const ss = String(s % 60).padStart(2,'0');
+    upEl.textContent = `${h}:${m}:${ss}`;
+  }, 1000);
+})();
+</script>
+<script>
+(() => {
+  const body = document.getElementById('termBody');
+  const form = document.getElementById('termForm');
+  const input = document.getElementById('termInput');
+  const C = window.__CONTENT__ || {};
+  const META = C.meta || {};
+  const fmt = window.__fmt || (s => s);
+
+  const history = [];
+  let histIdx = -1;
+
+  const scroll = () => { body.scrollTop = body.scrollHeight; };
+
+  function el(tag, cls, html){
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html != null) n.innerHTML = html;
+    return n;
+  }
+  function line(html, cls=''){
+    const d = el('div', 'line ' + cls, html);
+    body.appendChild(d);
+    scroll();
+    return d;
+  }
+  function echoCmd(cmd){
+    line(
+      `<span class="prompt"><span class="user">${META.termUser||''}</span><span class="dim">@</span><span class="host">${META.termHost||''}</span><span class="dim">:</span><span class="path">~</span><span class="dim">$</span></span> ${escapeHtml(cmd)}`
+    );
+  }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function renderBanner(){
+    const rows = (C.banner || []).map(([left, right]) =>
+      `<span class="acc">${escapeHtml(left)}</span>${right ? `<span class="dim">${escapeHtml(right)}</span>` : ''}`
+    );
+    return rows.join('\n');
+  }
+
+  async function typeLine(html, cls='', speed=8){
+    const d = el('div', 'line ' + cls, '');
+    body.appendChild(d);
+    const plain = html.replace(/<[^>]*>/g, '');
+    for (let i = 0; i <= plain.length; i += Math.max(1, Math.floor(plain.length / 40))){
+      d.textContent = plain.slice(0, i);
+      scroll();
+      await wait(speed);
+    }
+    d.innerHTML = html;
+    scroll();
+  }
+  const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+  async function boot(){
+    line('');
+    await typeLine(renderBanner(), 'dim', 0);
+    line('');
+    line(`type <span class="acc">help</span> to list commands · try <span class="acc">whoami</span>, <span class="acc">skills</span>, <span class="acc">news</span>, <span class="acc">contact</span>`, 'dim');
+    line('');
+  }
+
+  const COMMANDS = {
+    help: () => {
+      const rows = [
+        ['help',     'show this list'],
+        ['whoami',   'identity card'],
+        ['about',    'longer bio'],
+        ['skills [d]', 'enumerate capabilities (skills dfir|ir|re|ops)'],
+        ['news [t]', 'latest headlines (news cyber|ai|tech)'],
+        ['contact',  'channels of communication'],
+        ['pgp',      'print PGP public key fingerprint'],
+        ['uname',    'system info'],
+        ['ls',       'list current directory'],
+        ['cat <f>',  'print a file (try: cat about.md)'],
+        ['date',     'show current timestamp'],
+        ['banner',   're-print the banner'],
+        ['matrix',   'toggle rain density'],
+        ['hue <n>',  'set accent hue (0-360, e.g. `hue 155`)'],
+        ['clear',    'wipe the screen'],
+        ['exit',     'close session (just kidding)'],
+      ];
+      line(`<span class="dim">available commands</span>`);
+      const tbl = el('table');
+      for (const [k, v] of rows){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="k"><span class="acc">${k}</span></td><td class="dim">${v}</td>`;
+        tbl.appendChild(tr);
+      }
+      body.appendChild(tbl);
+      scroll();
+    },
+    whoami: () => {
+      const s = C.system || {};
+      line(`<span class="acc">${META.termUser||''}</span> <span class="dim">·</span> ethical hacker <span class="dim">·</span> offensive &amp; defensive`);
+      line(`<span class="dim">uid=</span>${s.uid}<span class="dim">(${s.userName}) gid=</span>${s.gid}<span class="dim">(${s.userName}) groups=</span>${fmt(escapeHtml(s.groupList||''))}`);
+      line(`<span class="dim">shell=</span>${escapeHtml(s.shell||'')} <span class="dim">home=</span>${escapeHtml(s.home||'')} <span class="dim">tz=</span>${escapeHtml(s.tz||'')}`);
+    },
+    about: () => {
+      for (const row of (C.about && C.about.terminalLines) || []){
+        if (row.startsWith('//')) line(`<span class="dim">${escapeHtml(row)}</span>`);
+        else line(fmt(escapeHtml(row)));
+      }
+    },
+    skills: (filter) => {
+      const groups = C.skills || [];
+      const showing = filter ? groups.filter(g => g.key === filter) : groups;
+      if (filter && !showing.length){
+        const keys = groups.map(g => g.key).join(', ');
+        line(`<span class="err">skills:</span> no such domain <span class="hl">${escapeHtml(filter)}</span> <span class="dim">— try ${keys}</span>`);
+        return;
+      }
+      for (const g of showing){
+        line(`<span class="acc">${g.glyph}</span>  <span class="hl">${escapeHtml(g.heading)}</span>`);
+        for (const it of (g.items || [])) line(`   <span class="dim">├─</span> ${escapeHtml(it)}`);
+        line('');
+      }
+    },
+    news: (filter) => {
+      line(`<span class="dim">// fetching feeds…</span>`);
+      loadNews(filter).then(items => {
+        if (!items || !items.length){
+          line(`<span class="err">news:</span> no items <span class="dim">(network or feed issue)</span>`);
+          return;
+        }
+        const f = filter ? filter.toUpperCase() : 'ALL';
+        line(`<span class="dim">total ${items.length} · filter [</span><span class="acc">${f}</span><span class="dim">]</span>`);
+        for (const it of items.slice(0, 12)){
+          const d = (it.date || '').slice(0, 10);
+          line(`<span class="dim">${d}</span>  <span class="acc">[${it.tag.padEnd(4)}]</span>  ${escapeHtml(it.title)} <span class="dim">· ${escapeHtml(it.source)}</span>`);
+        }
+      });
+    },
+    writeups: () => line(`<span class="dim">writeups → renamed to</span> <span class="acc">news</span>`),
+    contact: () => {
+      line(`<span class="dim">// channels</span>`);
+      const rows = (C.contact && C.contact.terminalRows) || [];
+      const pad = Math.max(0, ...rows.map(r => (r[0]||'').length));
+      for (const [label, value, note] of rows){
+        const labelPadded = label.padEnd(pad, ' ');
+        const tail = note ? ` <span class="dim">${escapeHtml(note.startsWith('(') ? note : '· ' + note)}</span>` : '';
+        line(`<span class="acc">${escapeHtml(labelPadded)}</span> ${escapeHtml(value)}${tail}`);
+      }
+    },
+    pgp: () => {
+      const p = C.pgp || {};
+      if (p.keyLine)     line(`<span class="dim">${escapeHtml(p.keyLine)}</span>`);
+      if (p.fingerprint) line(`<span class="acc">${escapeHtml(p.fingerprint)}</span>`);
+      if (p.uid)         line(`<span class="dim">${escapeHtml(p.uid)}</span>`);
+      if (p.sub)         line(`<span class="dim">${escapeHtml(p.sub)}</span>`);
+    },
+    uname: () => line(`<span class="dim">${escapeHtml((C.system||{}).uname||'')}</span>`),
+    ls:    () => line(fmt(escapeHtml((C.system||{}).lsOutput||''))),
+    date:  () => line(`<span class="dim">${new Date().toString()}</span>`),
+    banner:() => line(renderBanner(), 'dim'),
+    clear: () => { body.innerHTML = ''; },
+    exit:  () => line(`<span class="warn">nope.</span> <span class="dim">session is persistent. try</span> <span class="acc">clear</span> <span class="dim">instead.</span>`),
+    matrix:() => {
+      const t = window.__TWEAKS__;
+      t.rainDensity = t.rainDensity > 1.2 ? 0.6 : (t.rainDensity < 0.8 ? 1.0 : 1.5);
+      line(`<span class="ok">rain density →</span> <span class="acc">${t.rainDensity.toFixed(2)}×</span>`);
+      window.__applyTweaks && window.__applyTweaks();
+    },
+  };
+
+  const CAT = {
+    'about.md': () => COMMANDS.about(),
+    'skills.json': () => {
+      line(`<span class="dim">{</span>`);
+      line(`  <span class="acc">"dfir"</span>: [<span class="hl">"memory"</span>, <span class="hl">"disk"</span>, <span class="hl">"cloud"</span>, <span class="hl">"mobile"</span>],`);
+      line(`  <span class="acc">"ir"</span>  : [<span class="hl">"hunting"</span>, <span class="hl">"detection"</span>, <span class="hl">"command"</span>],`);
+      line(`  <span class="acc">"re"</span>  : [<span class="hl">"x86_64"</span>, <span class="hl">"arm64"</span>, <span class="hl">"obf"</span>],`);
+      line(`  <span class="acc">"ops"</span> : [<span class="hl">"ad"</span>, <span class="hl">"entra"</span>, <span class="hl">"c2"</span>, <span class="hl">"post-ex"</span>]`);
+      line(`<span class="dim">}</span>`);
+    },
+    'contact.vcf': () => COMMANDS.contact(),
+  };
+
+  function run(raw){
+    const cmd = raw.trim();
+    if (!cmd) return;
+    echoCmd(cmd);
+    history.unshift(cmd); if (history.length > 80) history.pop();
+    histIdx = -1;
+
+    const [c, ...rest] = cmd.split(/\s+/);
+    const arg = rest.join(' ');
+    if (c === 'cat'){
+      if (!arg) { line(`<span class="err">cat:</span> missing operand`); return; }
+      if (CAT[arg]) CAT[arg]();
+      else line(`<span class="err">cat:</span> ${escapeHtml(arg)}: No such file or directory`);
+      return;
+    }
+    if (c === 'hue'){
+      const n = parseFloat(arg);
+      if (isNaN(n) || n < 0 || n > 360){ line(`<span class="err">hue:</span> expected 0..360`); return; }
+      window.__TWEAKS__.accentHue = n;
+      window.__applyTweaks && window.__applyTweaks();
+      line(`<span class="ok">accent hue →</span> <span class="acc">${n}°</span>`);
+      return;
+    }
+    if (c === 'echo'){ line(escapeHtml(arg)); return; }
+    if (c === 'sudo'){ line(`<span class="err">sudo:</span> ${escapeHtml(META.termUser||'user')} is not in the sudoers file. this incident has been logged.`); return; }
+    if (c === 'skills') return COMMANDS.skills(arg.trim().toLowerCase() || null);
+    if (c === 'news') return COMMANDS.news(arg.trim().toLowerCase() || null);
+    if (COMMANDS[c]) return COMMANDS[c]();
+    line(`<span class="err">command not found:</span> ${escapeHtml(c)} <span class="dim">— try</span> <span class="acc">help</span>`);
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = input.value;
+    input.value = '';
+    run(v);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== input){
+      e.preventDefault(); input.focus();
+    } else if (e.key === '`' && document.activeElement !== input){
+      e.preventDefault();
+      document.getElementById('tweaks').classList.toggle('on');
+    } else if (e.key === 'ArrowUp' && document.activeElement === input){
+      if (history.length && histIdx < history.length - 1){ histIdx++; input.value = history[histIdx]; setTimeout(() => input.setSelectionRange(input.value.length, input.value.length), 0); }
+      e.preventDefault();
+    } else if (e.key === 'ArrowDown' && document.activeElement === input){
+      if (histIdx > 0){ histIdx--; input.value = history[histIdx]; }
+      else { histIdx = -1; input.value = ''; }
+      e.preventDefault();
+    } else if ((e.key === 'l' || e.key === 'L') && e.ctrlKey){
+      e.preventDefault(); body.innerHTML = '';
+    }
+  });
+
+  document.getElementById('terminal').addEventListener('click', (e) => {
+    if (e.target.closest('a,button,input')) return;
+    input.focus();
+  });
+
+  document.querySelectorAll('#sigils .sigil').forEach(s => {
+    s.addEventListener('click', () => {
+      input.focus();
+      const k = s.dataset.k;
+      run('skills ' + k);
+    });
+  });
+
+  const NEWS_FEEDS = (C.news && C.news.feeds) || [];
+  let NEWS_CACHE = null;
+
+  async function fetchFeed(feed){
+    const endpoint = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url);
+    try {
+      const r = await fetch(endpoint, { cache: 'no-store' });
+      const j = await r.json();
+      if (j.status !== 'ok' || !j.items) return [];
+      return j.items.slice(0, 5).map(it => ({
+        title: it.title || '(untitled)',
+        link: it.link || '#',
+        date: it.pubDate || '',
+        source: feed.source,
+        tag: feed.tag,
+      }));
+    } catch(e){ return []; }
+  }
+
+  async function loadNews(filter){
+    let feeds = NEWS_FEEDS;
+    if (filter){
+      const t = filter.toUpperCase();
+      feeds = NEWS_FEEDS.filter(f => f.tag === t);
+    }
+    const results = await Promise.all(feeds.map(fetchFeed));
+    const items = results.flat().sort((a, b) => new Date(b.date) - new Date(a.date));
+    NEWS_CACHE = items;
+    return items;
+  }
+
+  async function renderNewsPanel(filter){
+    const list = document.getElementById('newsList');
+    const meta = document.getElementById('newsMeta');
+    if (!list) return;
+    list.innerHTML = `<li class="news-loading"><span class="d">----</span><span class="ti" style="color:var(--fg-dim)">fetching feeds<span class="news-dots">…</span></span><span class="tg">NET</span></li>`;
+    if (meta) meta.textContent = 'curl rss.xml | head';
+    const items = await loadNews(filter);
+    if (!items || !items.length){
+      list.innerHTML = `<li><span class="d">----</span><span class="ti news-err">feed unreachable — try refresh</span><span class="tg">ERR</span></li>`;
+      return;
+    }
+    list.innerHTML = items.slice(0, 8).map(it => {
+      const d = (it.date || '').slice(0, 10).replace(/-/g, '.').slice(2);
+      return `<li>
+        <span class="d">${d}</span>
+        <a class="ti" href="${it.link}" target="_blank" rel="noopener">${escapeHtml(it.title)}</a>
+        <span class="tg">${it.tag}</span>
+      </li>`;
+    }).join('');
+    if (meta) meta.textContent = `${items.length} items · ${new Date().toLocaleTimeString()}`;
+  }
+
+  document.querySelectorAll('.news-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.news-filter').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      const f = btn.dataset.f === 'all' ? null : btn.dataset.f;
+      renderNewsPanel(f);
+    });
+  });
+  const refreshBtn = document.getElementById('newsRefresh');
+  if (refreshBtn) refreshBtn.addEventListener('click', () => {
+    const active = document.querySelector('.news-filter.on');
+    const f = active && active.dataset.f !== 'all' ? active.dataset.f : null;
+    renderNewsPanel(f);
+  });
+
+  renderNewsPanel(null);
+
+  boot();
+})();
+</script>
+<script>
+(() => {
+  const root = document.documentElement;
+  const body = document.body;
+  const t = window.__TWEAKS__;
+
+  function apply(){
+    root.style.setProperty('--hue', t.accentHue);
+    root.style.setProperty('--gi', String(t.glitchIntensity ?? 0.6));
+    document.querySelector('h1.name')?.style.setProperty('--gi', String(t.glitchIntensity ?? 0.6));
+    if (t.scanlines === false) body.classList.remove('scanlines'); else body.classList.add('scanlines');
+    const asciiMap = { dfir: '[·o·]', ir: '[!]', re: '<-/', ops: '[+]' };
+    const skillsByKey = Object.fromEntries(((window.__CONTENT__ || {}).skills || []).map(s => [s.key, s]));
+    document.querySelectorAll('.sigil .gl').forEach(el => {
+      const parent = el.parentElement;
+      const k = parent.dataset.k;
+      const s = skillsByKey[k] || {};
+      const pair = [s.glyph || '?', (k || '?').toUpperCase(), asciiMap[k] || '[·]'];
+      const style = t.sigilStyle || 'glyph';
+      el.textContent = style === 'glyph' ? pair[0] : style === 'mono' ? pair[1] : pair[2];
+      el.style.fontSize = style === 'glyph' ? '32px' : style === 'mono' ? '18px' : '22px';
+      el.style.letterSpacing = style === 'mono' ? '0.08em' : '0';
+    });
+
+    document.getElementById('lblHue').textContent = Math.round(t.accentHue) + '°';
+    document.getElementById('lblDensity').textContent = (t.rainDensity || 1).toFixed(2) + '×';
+    document.getElementById('lblGi').textContent = (t.glitchIntensity ?? 0.6).toFixed(2);
+
+    document.querySelectorAll('#segBehavior button').forEach(b => b.classList.toggle('on', b.dataset.v === t.behavior));
+    document.querySelectorAll('#segSigil button').forEach(b => b.classList.toggle('on', b.dataset.v === (t.sigilStyle || 'glyph')));
+    document.querySelectorAll('#segScan button').forEach(b => b.classList.toggle('on', (b.dataset.v === 'on') === (t.scanlines !== false)));
+    document.querySelectorAll('#swHue button').forEach(b => b.classList.toggle('on', Number(b.dataset.hue) === Math.round(t.accentHue)));
+    document.getElementById('rngDensity').value = t.rainDensity || 1;
+    document.getElementById('rngGi').value = t.glitchIntensity ?? 0.6;
+  }
+  window.__applyTweaks = apply;
+
+  function set(partial){
+    Object.assign(t, partial);
+    apply();
+  }
+
+  document.querySelectorAll('#swHue button').forEach(b => {
+    b.addEventListener('click', () => set({ accentHue: Number(b.dataset.hue) }));
+  });
+  document.getElementById('rngDensity').addEventListener('input', (e) => set({ rainDensity: parseFloat(e.target.value) }));
+  document.getElementById('rngGi').addEventListener('input', (e) => set({ glitchIntensity: parseFloat(e.target.value) }));
+  document.querySelectorAll('#segBehavior button').forEach(b => b.addEventListener('click', () => set({ behavior: b.dataset.v })));
+  document.querySelectorAll('#segSigil button').forEach(b => b.addEventListener('click', () => set({ sigilStyle: b.dataset.v })));
+  document.querySelectorAll('#segScan button').forEach(b => b.addEventListener('click', () => set({ scanlines: b.dataset.v === 'on' })));
+
+  apply();
+})();
+</script>
+</body>
+</html>
